@@ -29,7 +29,19 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.set('trust proxy', 1);
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      formAction: ["'self'", 'https://accounts.google.com'],
+      frameAncestors: ["'self'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+    },
+  },
+  crossOriginOpenerPolicy: false,
+}));
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl)
