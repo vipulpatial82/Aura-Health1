@@ -86,7 +86,7 @@ const SignupForm = ({ onSignup }) => {
               <div className="flex-1 border-t border-slate-200"></div>
             </div>
 
-            <a href={`${import.meta.env.VITE_API_URL || ''}/api/auth/google`}
+            <a href={`${import.meta.env.VITE_API_URL || 'https://aura-health-7f0s.onrender.com'}/api/auth/google`}
               className="btn-secondary w-full py-2.5 text-sm flex items-center justify-center gap-2">
               <FcGoogle className="text-lg" /> Continue with Google
             </a>
