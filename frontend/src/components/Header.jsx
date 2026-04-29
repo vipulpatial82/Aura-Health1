@@ -44,6 +44,20 @@ const Header = ({ isLoggedIn, onLogout, user }) => {
     }).catch(() => {})
   }, [isLoggedIn, user?.role, location.pathname])
 
+  // Close mobile menu on outside click
+  useEffect(() => {
+    if (!menuOpen) return
+    const handler = (e) => {
+      if (!e.target.closest('header')) setMenuOpen(false)
+    }
+    document.addEventListener('touchstart', handler)
+    document.addEventListener('mousedown', handler)
+    return () => {
+      document.removeEventListener('touchstart', handler)
+      document.removeEventListener('mousedown', handler)
+    }
+  }, [menuOpen])
+
   // Close notif dropdown on outside click
   useEffect(() => {
     const handler = (e) => { if (notifRef.current && !notifRef.current.contains(e.target)) setShowNotif(false) }
@@ -134,7 +148,7 @@ const Header = ({ isLoggedIn, onLogout, user }) => {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden absolute w-full bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-lg">
+        <div className="md:hidden absolute w-full bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-lg z-50">
           <div className="px-4 py-3 space-y-1">
             {navItems.map((item) => (
               <button key={item.path} onClick={() => { navigate(item.path); setMenuOpen(false) }}

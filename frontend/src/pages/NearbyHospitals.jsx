@@ -37,7 +37,7 @@ export default function NearbyHospitals() {
   };
 
   return (
-    <div className="p-6 min-h-[calc(100vh-200px)] bg-slate-50 relative overflow-hidden">
+    <div className="p-4 md:p-6 min-h-[calc(100vh-56px)] bg-slate-50 relative overflow-hidden">
       <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-green-200 rounded-full blur-3xl opacity-40 pointer-events-none animate-float"></div>
       <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-yellow-200 rounded-full blur-3xl opacity-40 pointer-events-none animate-pulse-slow"></div>
 
@@ -126,8 +126,9 @@ export default function NearbyHospitals() {
         <iframe
             title="Google Maps"
             width="100%"
-            height="450"
+            height="300"
             style={{ border: 0, borderRadius: '1.5rem' }}
+            className="md:!h-[450px]"
             loading="lazy"
             allowFullScreen
             referrerPolicy="no-referrer-when-downgrade"
