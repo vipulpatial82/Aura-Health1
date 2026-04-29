@@ -48,6 +48,7 @@ const App = () => {
     setUser(null);
     localStorage.removeItem('user');
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
   }
 
   const layout = (children) => (

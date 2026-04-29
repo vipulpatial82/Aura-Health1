@@ -38,7 +38,7 @@ router.get('/google/callback',
       setAuthCookies(res, accessToken, refreshToken);
 
       const userData = encodeURIComponent(JSON.stringify({
-        id: user._id, name: user.name, email: user.email, role: user.role, accessToken,
+        id: user._id, name: user.name, email: user.email, role: user.role, accessToken, refreshToken,
       }));
 
       res.redirect(`${process.env.CLIENT_URL}/oauth/callback?user=${userData}`);

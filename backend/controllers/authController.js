@@ -17,7 +17,7 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const refresh = asyncHandler(async (req, res) => {
-  const token = req.cookies?.refreshToken;
+  const token = req.cookies?.refreshToken || req.body?.refreshToken;
   const result = await authService.refreshAccessToken(token);
   setAuthCookies(res, result.accessToken, result.refreshToken);
   res.json({ success: true, data: { user: result.user, accessToken: result.accessToken } });

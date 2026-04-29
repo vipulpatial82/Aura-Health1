@@ -21,6 +21,7 @@ const OAuthCallback = ({ onLogin }) => {
     try {
       const parsed = JSON.parse(decodeURIComponent(user));
       if (parsed.accessToken) localStorage.setItem('accessToken', parsed.accessToken);
+      if (parsed.refreshToken) localStorage.setItem('refreshToken', parsed.refreshToken);
       localStorage.setItem('user', JSON.stringify(parsed));
       onLogin(parsed);
       navigate('/dashboard', { replace: true });

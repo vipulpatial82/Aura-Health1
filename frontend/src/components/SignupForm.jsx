@@ -24,6 +24,7 @@ const SignupForm = ({ onSignup }) => {
       })
       if (data.success) {
         localStorage.setItem('accessToken', data.data.accessToken)
+        localStorage.setItem('refreshToken', data.data.refreshToken || '')
         localStorage.setItem('user', JSON.stringify(data.data.user))
         onSignup(data.data.user)
         navigate('/dashboard', { replace: true })
