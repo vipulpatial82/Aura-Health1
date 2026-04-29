@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api',
   withCredentials: true,
-  timeout: 60000, // 60s — AI analysis can take up to 30s
+  timeout: 60000,
 });
 
 let isRefreshing = false;
