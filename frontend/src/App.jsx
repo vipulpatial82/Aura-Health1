@@ -47,6 +47,7 @@ const App = () => {
     try { await api.post('/auth/logout'); } catch {}
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('accessToken');
   }
 
   const layout = (children) => (

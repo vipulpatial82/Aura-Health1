@@ -34,6 +34,7 @@ const LoginForm = ({ onLogin }) => {
     try {
       const { data } = await api.post('/auth/login', formData)
       if (data.success) {
+        localStorage.setItem('accessToken', data.data.accessToken)
         localStorage.setItem('user', JSON.stringify(data.data.user))
         onLogin(data.data.user)
         navigate(from, { replace: true })
