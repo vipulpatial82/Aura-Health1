@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa'
-import { FcGoogle } from 'react-icons/fc'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { auth } from '../api/firebase'
 import api from '../api/axiosInstance'
 
 const SignupForm = ({ onSignup }) => {
@@ -19,9 +20,18 @@ const SignupForm = ({ onSignup }) => {
     setIsLoading(true)
     setError('')
     try {
-      const { data } = await api.post('/auth/register', {
-        name: formData.name, email: formData.email, password: formData.password,
-      })
+      // Create user in Firebase
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
+      
+      // Update Firebase profile with name
+      await updateProfile(userCredential.user, { displayName: formData.name })
+      
+      // Get Firebase ID token
+      const idToken = await userCredential.user.getIdToken()
+
+      // Send to backend
+      const { data } = await api.post('/auth/firebase-login', { idToken, name: formData.name })
+      
       if (data.success) {
         localStorage.setItem('accessToken', data.data.accessToken)
         localStorage.setItem('refreshToken', data.data.refreshToken || '')
@@ -32,7 +42,8 @@ const SignupForm = ({ onSignup }) => {
         setError(data.message || 'Signup failed')
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Network error. Please try again.')
+      console.error('Signup error:', err)
+      setError(err.response?.data?.message || err.message || 'Network error. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -79,17 +90,6 @@ const SignupForm = ({ onSignup }) => {
             <button type="submit" disabled={isLoading} className="btn-primary w-full py-2.5 text-sm mt-1">
               {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
-
-            <div className="flex items-center gap-2">
-              <div className="flex-1 border-t border-slate-200"></div>
-              <span className="text-xs text-slate-400 font-semibold">or continue with</span>
-              <div className="flex-1 border-t border-slate-200"></div>
-            </div>
-
-            <a href={`${import.meta.env.VITE_API_URL || 'https://aura-health-7f0s.onrender.com'}/api/auth/google`}
-              className="btn-secondary w-full py-2.5 text-sm flex items-center justify-center gap-2">
-              <FcGoogle className="text-lg" /> Continue with Google
-            </a>
 
             <p className="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
               Already have an account?{' '}

@@ -47,7 +47,7 @@ export default function HeroSection({ isLoggedIn }) {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="lg:w-1/2 relative"
+          className="w-full lg:w-1/2 relative"
         >
           <div className="relative w-full aspect-square max-w-sm mx-auto">
             <div className="absolute inset-0 bg-gradient-to-tr from-green-500 to-yellow-400 rounded-full opacity-10 animate-spin-slow" />
@@ -55,7 +55,7 @@ export default function HeroSection({ isLoggedIn }) {
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-[10%] left-[5%] bg-white p-3 rounded-xl shadow-lg border border-slate-100 flex items-center gap-3 z-20"
+              className="absolute top-[10%] left-0 lg:left-[5%] bg-white p-3 rounded-xl shadow-lg border border-slate-100 flex items-center gap-3 z-20"
             >
               <div className="w-8 h-8 rounded-full bg-green-50 flex justify-center items-center">
                 <FaShieldAlt className="text-green-500 text-sm" />
@@ -69,7 +69,7 @@ export default function HeroSection({ isLoggedIn }) {
             <motion.div
               animate={{ y: [0, 14, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-[40%] right-[-5%] bg-white p-3 rounded-xl shadow-lg border border-slate-100 flex flex-col items-center gap-1 z-20"
+              className="absolute top-[40%] right-0 lg:right-[-5%] bg-white p-3 rounded-xl shadow-lg border border-slate-100 flex flex-col items-center gap-1 z-20"
             >
               <div className="w-10 h-10 rounded-full bg-yellow-50 flex justify-center items-center">
                 <FaUserMd className="text-yellow-500 text-lg" />
@@ -80,7 +80,7 @@ export default function HeroSection({ isLoggedIn }) {
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-              className="absolute bottom-[10%] left-[20%] bg-green-600 p-4 rounded-2xl shadow-lg text-white z-20"
+              className="absolute bottom-[10%] left-4 lg:left-[20%] bg-green-600 p-4 rounded-2xl shadow-lg text-white z-20"
             >
               <div className="flex items-center gap-3">
                 <FaHeartbeat className="text-white text-base" />

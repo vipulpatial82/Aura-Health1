@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, select: false },
     googleId: { type: String, unique: true, sparse: true },
+    firebaseUid: { type: String, unique: true, sparse: true },
+    authProvider: { type: String, enum: ['local', 'google', 'firebase'], default: 'local' },
     role: { type: String, enum: ['patient', 'doctor', 'admin'], default: 'patient' },
     refreshToken: { type: String, select: false },
     refreshTokenExpiry: { type: Date, select: false },

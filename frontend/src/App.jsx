@@ -16,8 +16,6 @@ import Profile from './pages/Profile'
 import LoginForm from './components/LoginForm'
 import SignupForm from './components/SignupForm'
 
-import OAuthCallback from './pages/OAuthCallback'
-
 const PageLayout = ({ isLoggedIn, onLogout, user, children }) => (
   <div className="flex flex-col min-h-screen">
     <Header isLoggedIn={isLoggedIn} onLogout={onLogout} user={user} />

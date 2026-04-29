@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FaEnvelope, FaLock, FaUserPlus } from 'react-icons/fa'
-import { FcGoogle } from 'react-icons/fc'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../api/firebase'
 import api from '../api/axiosInstance'
 
 const LoginForm = ({ onLogin }) => {
@@ -32,7 +33,15 @@ const LoginForm = ({ onLogin }) => {
 
     setIsLoading(true)
     try {
-      const { data } = await api.post('/auth/login', formData)
+      // Sign in with Firebase
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password)
+      
+      // Get Firebase ID token
+      const idToken = await userCredential.user.getIdToken()
+
+      // Send to backend
+      const { data } = await api.post('/auth/firebase-login', { idToken })
+      
       if (data.success) {
         localStorage.setItem('accessToken', data.data.accessToken)
         localStorage.setItem('refreshToken', data.data.refreshToken || '')
@@ -43,7 +52,8 @@ const LoginForm = ({ onLogin }) => {
         setError(data.message || 'Login failed')
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Server error')
+      console.error('Login error:', err)
+      setError(err.response?.data?.message || err.message || 'Invalid credentials or server error')
     } finally {
       setIsLoading(false)
     }
@@ -92,17 +102,6 @@ const LoginForm = ({ onLogin }) => {
             <button type="button" onClick={() => navigate('/signup')} className="btn-secondary w-full py-2.5 text-sm">
               <FaUserPlus className="text-slate-400" /> Create Account
             </button>
-
-            <div className="flex items-center gap-2">
-              <div className="flex-1 border-t border-slate-200"></div>
-              <span className="text-xs text-slate-400 font-semibold">or continue with</span>
-              <div className="flex-1 border-t border-slate-200"></div>
-            </div>
-
-            <a href={`${import.meta.env.VITE_API_URL || 'https://aura-health-7f0s.onrender.com'}/api/auth/google`}
-              className="btn-secondary w-full py-2.5 text-sm flex items-center justify-center gap-2">
-              <FcGoogle className="text-lg" /> Continue with Google
-            </a>
           </form>
         </div>
       </motion.div>

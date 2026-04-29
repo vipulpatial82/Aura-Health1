@@ -3,6 +3,9 @@ import User from '../models/User.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/tokenUtils.js';
 import { AppError } from '../middleware/errorMiddleware.js';
 
+// Re-export for use in authController
+export { generateAccessToken, generateRefreshToken } from '../utils/tokenUtils.js';
+
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_DURATION_MS = 15 * 60 * 1000;
 
