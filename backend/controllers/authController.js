@@ -7,24 +7,24 @@ import bcrypt from 'bcrypt';
 export const register = asyncHandler(async (req, res) => {
   const result = await authService.registerUser(req.body);
   setAuthCookies(res, result.accessToken, result.refreshToken);
-  res.status(201).json({ success: true, data: { user: result.user, accessToken: result.accessToken } });
+  res.status(201).json({ success: true, data: { user: result.user, accessToken: result.accessToken, refreshToken: result.refreshToken } });
 });
 
 export const login = asyncHandler(async (req, res) => {
   const result = await authService.loginUser(req.body.email, req.body.password);
   setAuthCookies(res, result.accessToken, result.refreshToken);
-  res.json({ success: true, data: { user: result.user, accessToken: result.accessToken } });
+  res.json({ success: true, data: { user: result.user, accessToken: result.accessToken, refreshToken: result.refreshToken } });
 });
 
 export const refresh = asyncHandler(async (req, res) => {
   const token = req.cookies?.refreshToken || req.body?.refreshToken;
   const result = await authService.refreshAccessToken(token);
   setAuthCookies(res, result.accessToken, result.refreshToken);
-  res.json({ success: true, data: { user: result.user, accessToken: result.accessToken } });
+  res.json({ success: true, data: { user: result.user, accessToken: result.accessToken, refreshToken: result.refreshToken } });
 });
 
 export const logout = asyncHandler(async (req, res) => {
-  await authService.logoutUser(req.user.id);
+  try { await authService.logoutUser(req.user.id); } catch {}
   clearAuthCookies(res);
   res.json({ success: true, message: 'Logged out successfully' });
 });

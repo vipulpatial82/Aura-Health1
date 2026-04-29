@@ -26,6 +26,8 @@ router.get('/google/callback',
   async (req, res) => {
     try {
       const user = req.user;
+      if (!user) return res.redirect(`${process.env.CLIENT_URL}/login?error=oauth_failed`);
+
       const accessToken  = generateAccessToken(user._id);
       const refreshToken = generateRefreshToken();
 
@@ -42,7 +44,8 @@ router.get('/google/callback',
       }));
 
       res.redirect(`${process.env.CLIENT_URL}/oauth/callback?user=${userData}`);
-    } catch {
+    } catch (err) {
+      console.error('OAuth callback error:', err);
       res.redirect(`${process.env.CLIENT_URL}/login?error=oauth_failed`);
     }
   }
