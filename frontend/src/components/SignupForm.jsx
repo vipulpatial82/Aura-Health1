@@ -73,6 +73,9 @@ const SignupForm = ({ onSignup }) => {
       console.error('Google sign-up error:', err)
       if (err.code === 'auth/popup-closed-by-user') {
         setError('Sign-up popup was closed. Please try again.')
+      } else if (err.code === 'auth/unauthorized-domain') {
+        const currentDomain = typeof window !== 'undefined' ? window.location.hostname : 'your-domain'
+        setError(`Domain "${currentDomain}" is not authorized in Firebase Auth. Add it in Firebase Console > Authentication > Settings > Authorized domains.`)
       } else if (err.code === 'auth/operation-not-allowed') {
         const projectHint = firebaseProjectInfo.projectId || firebaseProjectInfo.authDomain || 'unknown-project'
         setError(`Google login is disabled for Firebase project "${projectHint}". Check deployed Firebase env values.`)
