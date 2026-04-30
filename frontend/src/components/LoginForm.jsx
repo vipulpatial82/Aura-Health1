@@ -51,7 +51,12 @@ const LoginForm = ({ onLogin }) => {
       }
     } catch (err) {
       console.error('Login error:', err)
-      setError(err.response?.data?.message || err.message || 'Invalid credentials or server error')
+      if (err.code === 'ERR_NETWORK') {
+        const apiUrl = import.meta.env.VITE_API_URL || 'https://aura-health-7f0s.onrender.com'
+        setError(`Cannot reach server. Check backend/CORS for ${apiUrl}.`)
+      } else {
+        setError(err.response?.data?.message || err.message || 'Invalid credentials or server error')
+      }
     } finally {
       setIsLoading(false)
     }

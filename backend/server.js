@@ -21,11 +21,18 @@ connectDB().then(() => seedDefaultAccounts());
 
 const app = express();
 
+const normalizeOrigin = (value) => (value || '').trim().replace(/\/$/, '');
+const envClientOrigins = (process.env.CLIENT_URLS || '')
+  .split(',')
+  .map(normalizeOrigin)
+  .filter(Boolean);
+
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  ...envClientOrigins,
   'http://localhost:3000',
   'http://localhost:5173',
-].filter(Boolean);
+].map(normalizeOrigin).filter(Boolean);
 
 app.set('trust proxy', 1);
 app.use(helmet({
@@ -45,14 +52,16 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl)
     if (!origin) return callback(null, true);
+    const normalizedOrigin = normalizeOrigin(origin);
     // Allow any vercel.app subdomain + configured CLIENT_URL + localhost
     if (
-      origin.endsWith('.vercel.app') ||
-      origin.endsWith('.onrender.com') ||
-      allowedOrigins.includes(origin)
+      normalizedOrigin.endsWith('.vercel.app') ||
+      normalizedOrigin.endsWith('.onrender.com') ||
+      allowedOrigins.includes(normalizedOrigin)
     ) {
       return callback(null, true);
     }
+    logger.warn(`CORS blocked origin: ${origin}`);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,

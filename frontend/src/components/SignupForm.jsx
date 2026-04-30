@@ -37,7 +37,12 @@ const SignupForm = ({ onSignup }) => {
       }
     } catch (err) {
       console.error('Signup error:', err)
-      setError(err.response?.data?.message || err.message || 'Network error. Please try again.')
+      if (err.code === 'ERR_NETWORK') {
+        const apiUrl = import.meta.env.VITE_API_URL || 'https://aura-health-7f0s.onrender.com'
+        setError(`Cannot reach server. Check backend/CORS for ${apiUrl}.`)
+      } else {
+        setError(err.response?.data?.message || err.message || 'Network error. Please try again.')
+      }
     } finally {
       setIsLoading(false)
     }
