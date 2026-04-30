@@ -2,7 +2,22 @@ import axios from 'axios';
 
 // Use proxy in development, fallback to env var or production
 const isDev = import.meta.env.DEV;
-const BACKEND_URL = isDev ? '' : (import.meta.env.VITE_API_URL || 'https://aura-health-7f0s.onrender.com');
+const configuredApiUrl = (import.meta.env.VITE_API_URL || '').trim();
+const fallbackApiUrl = 'https://aura-health1.onrender.com';
+const runningOnLocalhost =
+  typeof window !== 'undefined' &&
+  ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+const shouldAvoidLocalApi =
+  !runningOnLocalhost &&
+  configuredApiUrl &&
+  /localhost|127\.0\.0\.1/i.test(configuredApiUrl);
+
+const BACKEND_URL = isDev
+  ? ''
+  : shouldAvoidLocalApi
+    ? fallbackApiUrl
+    : (configuredApiUrl || fallbackApiUrl);
 
 const api = axios.create({
   baseURL: `${BACKEND_URL}/api`,
