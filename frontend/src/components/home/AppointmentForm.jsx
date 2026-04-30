@@ -18,29 +18,29 @@ export default function AppointmentForm() {
   };
 
   return (
-    <section className="py-12 bg-slate-50 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-green-600 transform skew-x-12 translate-x-32 hidden lg:block z-0"></div>
+    <section className="py-14 md:py-16 bg-slate-50 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-b from-green-600 to-emerald-500 transform skew-x-12 translate-x-32 hidden lg:block z-0"></div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 
         <div>
-          <h3 className="text-2xl lg:text-3xl font-black text-slate-800 leading-tight mb-3">
+          <h3 className="text-2xl lg:text-4xl font-black text-slate-800 leading-tight mb-3">
             Ready to take <span className="text-green-600">control</span> of your health?
           </h3>
-          <p className="text-sm text-slate-500 font-medium max-w-sm">
+          <p className="text-sm md:text-base text-slate-500 font-medium max-w-sm">
             Secure your digital consultation in less than 60 seconds.
           </p>
         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="bg-white p-6 rounded-3xl shadow-xl border border-slate-100"
+          className="card p-5 sm:p-6 rounded-3xl border border-slate-100/80"
         >
           <div className="flex items-center gap-3 mb-5">
             <div className="w-9 h-9 rounded-xl bg-yellow-100 text-yellow-600 flex items-center justify-center text-base">
               <FaCalendarPlus />
             </div>
-            <h3 className="text-lg font-bold text-slate-800">Book Visit</h3>
+            <h3 className="text-xl font-bold text-slate-800">Book Visit</h3>
           </div>
 
           <form className="space-y-3.5" onSubmit={handleSubmit}>

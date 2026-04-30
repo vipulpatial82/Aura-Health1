@@ -8,6 +8,8 @@ export default function NearbyHospitals() {
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [locationSource, setLocationSource] = useState('');
+
   const handleApiCall = async (method, url, body = null) => {
     setLoading(true);
     setError('');
@@ -18,6 +20,7 @@ export default function NearbyHospitals() {
       if (data.success) {
         setHospitals(data.data);
         if (data.location) setLocation(data.location);
+        setLocationSource(method === 'get' ? 'ip' : locationSource);
       } else {
         setError(data.message || 'Failed to fetch hospitals');
       }
@@ -29,30 +32,72 @@ export default function NearbyHospitals() {
 
   const searchByLocation = () => {
     if (!location.trim()) return;
+    setLocationSource('manual');
     handleApiCall('post', '/hospitals/search', { location });
   };
 
-  const getAutoLocation = () => {
-    handleApiCall('get', '/hospitals/auto-location');
+  const getBrowserLocation = () =>
+    new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Geolocation is not supported on this device/browser.'));
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 300000,
+      });
+    });
+
+  const getAutoLocation = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      // Use device GPS first (best for iPhone/Android), then fallback to backend IP location.
+      const position = await getBrowserLocation();
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      const { data } = await api.post('/hospitals/nearby', { latitude, longitude });
+      if (!data.success) throw new Error(data.message || 'Could not detect location');
+
+      setHospitals(data.data);
+      setLocation(`Lat ${latitude.toFixed(3)}, Lng ${longitude.toFixed(3)}`);
+      setLocationSource('device');
+    } catch (geoErr) {
+      try {
+        const { data } = await api.get('/hospitals/auto-location');
+        if (!data.success) throw new Error(data.message || 'Could not detect location');
+        setHospitals(data.data);
+        if (data.location) setLocation(data.location);
+        setLocationSource('ip');
+      } catch (ipErr) {
+        setError(
+          'Could not detect location. Allow browser location permission and try again, or type your city manually.'
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="p-4 md:p-6 min-h-[calc(100vh-56px)] bg-slate-50 relative overflow-hidden">
-      <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-green-200 rounded-full blur-3xl opacity-40 pointer-events-none animate-float"></div>
-      <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-yellow-200 rounded-full blur-3xl opacity-40 pointer-events-none animate-pulse-slow"></div>
+    <div className="p-4 md:p-6 lg:p-8 min-h-[calc(100vh-56px)] bg-gradient-to-b from-slate-50 to-emerald-50/40 relative overflow-hidden">
+      <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-green-200 rounded-full blur-3xl opacity-35 pointer-events-none animate-float"></div>
+      <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-yellow-200 rounded-full blur-3xl opacity-35 pointer-events-none animate-pulse-slow"></div>
 
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto text-center mb-6 relative z-10"
+        className="max-w-4xl mx-auto text-center mb-7 relative z-10"
       >
-        <div className="w-12 h-12 bg-green-50 text-green-600 rounded-xl mx-auto flex items-center justify-center mb-3 shadow-sm border border-green-100">
+        <div className="w-14 h-14 bg-white text-green-600 rounded-2xl mx-auto flex items-center justify-center mb-3 shadow-md border border-green-100">
           <FaHospital className="text-xl" />
         </div>
-        <h1 className="text-2xl text-slate-800 font-extrabold mb-2 tracking-tight">
+        <h1 className="text-2xl md:text-3xl text-slate-800 font-extrabold mb-2 tracking-tight">
           Find Nearby Hospitals
         </h1>
-        <p className="text-slate-500 text-sm">Locate healthcare facilities around you.</p>
+        <p className="text-slate-500 text-sm md:text-base">Locate healthcare facilities around you in seconds.</p>
       </motion.div>
 
       <motion.div 
@@ -61,7 +106,7 @@ export default function NearbyHospitals() {
         transition={{ delay: 0.1 }}
         className="max-w-2xl mx-auto mb-8 relative z-10"
       >
-        <div className="card p-5 relative">
+        <div className="card p-4 sm:p-5 md:p-6 relative">
           <div className="flex flex-col sm:flex-row gap-4 mb-4">
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -75,10 +120,10 @@ export default function NearbyHospitals() {
                 className="input-field w-full pl-11 pr-4 py-3.5"
               />
             </div>
-            <button
+              <button
               onClick={searchByLocation}
               disabled={loading}
-              className="btn-primary py-3.5 px-8 flex items-center justify-center gap-2"
+                className="btn-primary py-3.5 px-8 flex items-center justify-center gap-2 sm:w-auto w-full"
             >
               Search
             </button>
@@ -97,11 +142,16 @@ export default function NearbyHospitals() {
           >
             <FaLocationArrow /> Use Current Location
           </button>
+          {locationSource && (
+            <p className="text-center text-xs text-slate-500 mt-3">
+              Location source: {locationSource === 'device' ? 'Device GPS' : locationSource === 'ip' ? 'Network IP' : 'Manual search'}
+            </p>
+          )}
         </div>
       </motion.div>
 
       {error && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-red-500 bg-red-50 p-4 rounded-xl max-w-2xl mx-auto border border-red-100 mb-8 font-medium">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-red-600 bg-red-50 p-4 rounded-xl max-w-2xl mx-auto border border-red-100 mb-8 font-medium text-sm">
           {error}
         </motion.div>
       )}
@@ -121,14 +171,14 @@ export default function NearbyHospitals() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="max-w-6xl mx-auto mb-8 relative z-10 bg-white/70 backdrop-blur-xl p-2 rounded-2xl border border-white/50 shadow-xl"
+        className="max-w-6xl mx-auto mb-8 relative z-10 bg-white/80 backdrop-blur-xl p-2 rounded-2xl border border-white/60 shadow-xl"
       >
         <iframe
             title="Google Maps"
             width="100%"
-            height="300"
+            height="280"
             style={{ border: 0, borderRadius: '1.5rem' }}
-            className="md:!h-[450px]"
+            className="h-[280px] sm:h-[320px] md:!h-[450px]"
             loading="lazy"
             allowFullScreen
             referrerPolicy="no-referrer-when-downgrade"
@@ -148,7 +198,7 @@ export default function NearbyHospitals() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 * index }}
             key={hospital.id} 
-            className="card text-center p-5 flex flex-col justify-between group"
+            className="card text-center p-5 flex flex-col justify-between group h-full"
           >
             <div>
               <div className="w-10 h-10 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-rose-500 group-hover:text-white transition-colors">

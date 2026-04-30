@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://aura-health-7f0s.onrender.com';
+// Use proxy in development, fallback to env var or production
+const isDev = import.meta.env.DEV;
+const BACKEND_URL = isDev ? '' : (import.meta.env.VITE_API_URL || 'https://aura-health-7f0s.onrender.com');
 
 const api = axios.create({
   baseURL: `${BACKEND_URL}/api`,

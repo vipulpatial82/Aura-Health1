@@ -66,7 +66,7 @@ const Header = ({ isLoggedIn, onLogout, user }) => {
   }, [])
 
   return (
-    <header className="fixed w-full top-0 z-50">
+    <header className="fixed top-0 z-50 w-full max-w-full">
       <div className="absolute inset-0 glass-effect border-b border-white/20 shadow-sm"></div>
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
@@ -75,7 +75,7 @@ const Header = ({ isLoggedIn, onLogout, user }) => {
             Aura<span className="text-gradient">Health</span>
           </button>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1 flex-wrap justify-end">
             {navItems.map((item) => (
               <button key={item.path} onClick={() => navigate(item.path)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
@@ -128,7 +128,7 @@ const Header = ({ isLoggedIn, onLogout, user }) => {
             )}
           </div>
 
-          <div className="md:hidden flex items-center gap-2">
+          <div className="md:hidden flex items-center gap-2 shrink-0">
             {isLoggedIn && (
               <button onClick={() => { navigate('/appointments'); setMenuOpen(false) }}
                 className="relative p-2 rounded-xl text-slate-500">
@@ -148,8 +148,8 @@ const Header = ({ isLoggedIn, onLogout, user }) => {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden absolute w-full bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-lg z-50">
-          <div className="px-4 py-3 space-y-1">
+        <div className="md:hidden absolute left-0 right-0 w-full max-w-full bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-lg z-50">
+          <div className="px-4 py-3 space-y-1 max-h-[calc(100vh-3.5rem)] overflow-y-auto">
             {navItems.map((item) => (
               <button key={item.path} onClick={() => { navigate(item.path); setMenuOpen(false) }}
                 className={`block w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${

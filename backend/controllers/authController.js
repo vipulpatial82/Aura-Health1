@@ -5,8 +5,6 @@ import User from '../models/User.js';
 import bcrypt from 'bcrypt';
 import { verifyFirebaseToken } from '../services/firebaseAdmin.js';
 
-// Old register and login methods removed
-
 export const refresh = asyncHandler(async (req, res) => {
   const token = req.cookies?.refreshToken || req.body?.refreshToken;
   const result = await authService.refreshAccessToken(token);
@@ -45,48 +43,67 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
 export const firebaseLogin = asyncHandler(async (req, res) => {
   const { idToken, name: providedName } = req.body;
-  
-  if (!idToken) {
-    throw new AppError('ID token is required', 400);
+
+  if (!idToken) throw new AppError('ID token is required', 400);
+
+  const decodedToken = await verifyFirebaseToken(idToken);
+  const uid = decodedToken.uid;
+  const email = decodedToken.email;
+  const decodedName =
+    decodedToken.name ||
+    decodedToken.displayName ||
+    decodedToken.firebase?.identities?.name?.[0] ||
+    '';
+
+  if (!email) throw new AppError('Firebase token does not contain an email', 400);
+
+  const adminEmail = process.env.ADMIN_EMAIL || 'doctor@aurahealth.com';
+  const doctorEmails = (process.env.DOCTOR_EMAILS || 'dr.sarah@aurahealth.com')
+    .split(',')
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean);
+
+  let role = 'patient';
+  const emailLower = email.toLowerCase();
+
+  if (emailLower === adminEmail.toLowerCase()) {
+    role = 'admin';
+  } else if (doctorEmails.includes(emailLower)) {
+    role = 'doctor';
   }
 
-  // Verify the Firebase token
-  const decodedToken = await verifyFirebaseToken(idToken);
-  const { uid, email, name, picture } = decodedToken;
-
-  // Find or create user
   let user = await User.findOne({ email });
-  
+
   if (!user) {
-    // Create new user for Firebase auth
     user = await User.create({
-      name: providedName || name || email.split('@')[0],
+      name: providedName || decodedName || email.split('@')[0],
       email,
-      password: 'firebase-oauth', // Placeholder for Firebase users
-      role: 'patient',
+      password: 'firebase-oauth',
+      role,
       isVerified: true,
       authProvider: 'firebase',
       firebaseUid: uid,
     });
   } else {
-    // Update existing user with Firebase info
+    if (!user.name || user.name === email.split('@')[0]) {
+      user.name = providedName || user.name || decodedName || email.split('@')[0];
+    }
     user.firebaseUid = uid;
     user.authProvider = 'firebase';
     user.lastLogin = new Date();
     await user.save();
   }
 
-  // Generate tokens
   const accessToken = authService.generateAccessToken(user._id);
   const refreshToken = authService.generateRefreshToken();
 
-  // Save refresh token
   user.refreshToken = refreshToken;
   user.refreshTokenExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   await user.save();
 
   setAuthCookies(res, accessToken, refreshToken);
 
+  // FIX: include refreshToken in response body so frontend can read it
   res.json({
     success: true,
     data: {
@@ -95,4 +112,48 @@ export const firebaseLogin = asyncHandler(async (req, res) => {
       refreshToken,
     },
   });
+});
+
+export const localLogin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) throw new AppError('Email and password are required', 400);
+
+  const adminEmail = process.env.ADMIN_EMAIL || 'doctor@aurahealth.com';
+  const seedPassword = process.env.SEED_PASSWORD || 'Doctor@123';
+
+  if (email.toLowerCase() === adminEmail.toLowerCase() && password === seedPassword) {
+    let user = await User.findOne({ email: email.toLowerCase() });
+    
+    if (!user) {
+      user = await User.create({
+        name: 'Dr. Sarah',
+        email: email.toLowerCase(),
+        password: 'local-admin',
+        role: 'admin',
+        isVerified: true,
+        authProvider: 'local'
+      });
+    }
+
+    const accessToken = authService.generateAccessToken(user._id);
+    const refreshToken = authService.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    user.refreshTokenExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    user.lastLogin = new Date();
+    await user.save();
+
+    setAuthCookies(res, accessToken, refreshToken);
+
+    return res.json({
+      success: true,
+      data: {
+        user: { id: user._id, name: user.name, email: user.email, role: user.role },
+        accessToken,
+        refreshToken,
+      },
+    });
+  }
+
+  throw new AppError('Invalid email or password', 401);
 });

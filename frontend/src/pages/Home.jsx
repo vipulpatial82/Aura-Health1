@@ -5,10 +5,10 @@ import AboutSection from '../components/home/AboutSection';
 import DoctorsSection from '../components/home/DoctorsSection';
 import AppointmentForm from '../components/home/AppointmentForm';
 
-const Home = () => {
+const Home = ({ isLoggedIn }) => {
   return (
     <main>
-      <HeroSection />
+      <HeroSection isLoggedIn={isLoggedIn} />
       <ServicesSection />
       <AboutSection />
       <DoctorsSection />

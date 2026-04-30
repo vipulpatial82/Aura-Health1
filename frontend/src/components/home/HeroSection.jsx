@@ -11,11 +11,11 @@ const fadeUp = (delay = 0) => ({
 
 export default function HeroSection({ isLoggedIn }) {
   return (
-    <section className="relative pt-20 pb-12 lg:pt-28 lg:pb-20 overflow-hidden bg-slate-50">
+    <section className="relative pt-16 pb-10 md:pt-20 md:pb-12 lg:pt-28 lg:pb-20 overflow-hidden bg-slate-50">
       <div className="absolute top-[-10%] right-[-5%] w-72 h-72 bg-green-200 rounded-full blur-3xl opacity-30 pointer-events-none z-0" />
       <div className="absolute bottom-[-10%] left-[-5%] w-64 h-64 bg-yellow-100 rounded-full blur-3xl opacity-40 pointer-events-none z-0" />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center gap-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center gap-8 md:gap-10">
 
         {/* Left — text content */}
         <div className="lg:w-1/2 text-center lg:text-left">
@@ -24,7 +24,7 @@ export default function HeroSection({ isLoggedIn }) {
             AuraHealth #1 Trusted Platform
           </motion.div>
 
-          <motion.h1 {...fadeUp(0.1)} className="text-3xl lg:text-5xl font-black text-slate-800 tracking-tight leading-tight mb-4">
+          <motion.h1 {...fadeUp(0.1)} className="text-2xl md:text-4xl lg:text-5xl font-black text-slate-800 tracking-tight leading-tight mb-4">
             Modern <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-400">Healthcare</span> at your fingertips.
           </motion.h1>
 
@@ -47,15 +47,15 @@ export default function HeroSection({ isLoggedIn }) {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="w-full lg:w-1/2 relative"
+          className="w-full lg:w-1/2 relative mt-2 lg:mt-0"
         >
-          <div className="relative w-full aspect-square max-w-sm mx-auto">
+          <div className="relative w-full aspect-square max-w-[18rem] sm:max-w-sm mx-auto">
             <div className="absolute inset-0 bg-gradient-to-tr from-green-500 to-yellow-400 rounded-full opacity-10 animate-spin-slow" />
 
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-[10%] left-0 lg:left-[5%] bg-white p-3 rounded-xl shadow-lg border border-slate-100 flex items-center gap-3 z-20"
+              className="absolute top-[8%] left-[2%] sm:left-0 lg:left-[5%] bg-white p-2.5 sm:p-3 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2 sm:gap-3 z-20"
             >
               <div className="w-8 h-8 rounded-full bg-green-50 flex justify-center items-center">
                 <FaShieldAlt className="text-green-500 text-sm" />
@@ -69,7 +69,7 @@ export default function HeroSection({ isLoggedIn }) {
             <motion.div
               animate={{ y: [0, 14, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute top-[40%] right-0 lg:right-[-5%] bg-white p-3 rounded-xl shadow-lg border border-slate-100 flex flex-col items-center gap-1 z-20"
+              className="absolute top-[38%] right-[2%] sm:right-0 lg:right-[-5%] bg-white p-2.5 sm:p-3 rounded-xl shadow-lg border border-slate-100 flex flex-col items-center gap-1 z-20"
             >
               <div className="w-10 h-10 rounded-full bg-yellow-50 flex justify-center items-center">
                 <FaUserMd className="text-yellow-500 text-lg" />
@@ -80,7 +80,7 @@ export default function HeroSection({ isLoggedIn }) {
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-              className="absolute bottom-[10%] left-4 lg:left-[20%] bg-green-600 p-4 rounded-2xl shadow-lg text-white z-20"
+              className="absolute bottom-[8%] left-[8%] lg:left-[20%] bg-green-600 p-3 sm:p-4 rounded-2xl shadow-lg text-white z-20"
             >
               <div className="flex items-center gap-3">
                 <FaHeartbeat className="text-white text-base" />
@@ -88,8 +88,8 @@ export default function HeroSection({ isLoggedIn }) {
               </div>
             </motion.div>
 
-            <div className="absolute inset-8 rounded-full border-[16px] border-white shadow-2xl backdrop-blur-xl bg-gradient-to-br from-green-50 to-slate-50 flex items-center justify-center">
-              <img src="/favicon.png" alt="AuraHealth" className="w-28 h-28 object-contain opacity-80" />
+            <div className="absolute inset-8 rounded-full border-[14px] sm:border-[16px] border-white shadow-2xl backdrop-blur-xl bg-gradient-to-br from-green-50 to-slate-50 flex items-center justify-center">
+              <img src="/favicon.png" alt="AuraHealth" className="w-24 h-24 sm:w-28 sm:h-28 object-contain opacity-80" />
             </div>
           </div>
         </motion.div>

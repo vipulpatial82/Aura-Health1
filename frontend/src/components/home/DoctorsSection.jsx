@@ -49,15 +49,15 @@ export default function DoctorsSection() {
   );
 
   return (
-    <section className="py-16 bg-white relative overflow-hidden">
+    <section className="py-14 md:py-16 bg-white relative overflow-hidden">
       <div className="absolute top-0 left-0 w-72 h-72 bg-green-100 rounded-full blur-3xl opacity-30 pointer-events-none -translate-x-1/2 -translate-y-1/2" />
       <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-100 rounded-full blur-3xl opacity-30 pointer-events-none translate-x-1/2 translate-y-1/2" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
-        <div className="text-center mb-10">
-          <p className="text-green-600 font-bold tracking-widest uppercase text-xs mb-1">Our Specialists</p>
-          <h3 className="text-2xl font-extrabold text-slate-800">Meet Our Top Doctors</h3>
+        <div className="text-center mb-10 max-w-2xl mx-auto">
+          <p className="section-kicker">Our Specialists</p>
+          <h3 className="section-title">Meet Our Top Doctors</h3>
         </div>
 
         {loading ? (
@@ -71,12 +71,12 @@ export default function DoctorsSection() {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
               <ArrowButton onClick={goBack} disabled={!hasPrev}>
                 <FaChevronLeft className="text-sm" />
               </ArrowButton>
 
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
+              <div className="w-full flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-hidden">
                 <AnimatePresence mode="popLayout" initial={false}>
                   {visibleDoctors.map((doctor, i) => {
                     const color = CARD_COLORS[(page + i) % CARD_COLORS.length];

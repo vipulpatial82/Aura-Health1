@@ -78,7 +78,7 @@ const App = () => {
       <Route path="/profile"              element={protectedLayout(<Profile user={user} onUpdate={handleLogin} />)} />
       <Route path="/login"  element={layout(<LoginForm onLogin={handleLogin} />)} />
       <Route path="/signup" element={layout(<SignupForm onSignup={handleLogin} />)} />
-      <Route path="/oauth/callback" element={<OAuthCallback onLogin={handleLogin} />} />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
