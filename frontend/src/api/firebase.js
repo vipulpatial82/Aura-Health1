@@ -12,9 +12,18 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-const missingFirebaseEnv = Object.entries(firebaseConfig)
-  .filter(([, value]) => !value)
-  .map(([key]) => key);
+const requiredFirebaseKeys = [
+  'apiKey',
+  'authDomain',
+  'projectId',
+  'storageBucket',
+  'messagingSenderId',
+  'appId',
+];
+
+const missingFirebaseEnv = requiredFirebaseKeys.filter(
+  (key) => !firebaseConfig[key]
+);
 
 if (missingFirebaseEnv.length > 0) {
   console.error(
