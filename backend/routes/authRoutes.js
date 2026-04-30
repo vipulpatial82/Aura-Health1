@@ -1,5 +1,5 @@
 import express from 'express';
-import { refresh, logout, getProfile, updateProfile, firebaseLogin, localLogin } from '../controllers/authController.js';
+import { refresh, logout, getProfile, updateProfile, firebaseLogin, localLogin, localRegister } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authLimiter } from '../middleware/rateLimiter.js';
 
@@ -13,5 +13,6 @@ router.put('/profile', protect, updateProfile);
 
 router.post('/firebase-login', authLimiter, firebaseLogin);
 router.post('/login', authLimiter, localLogin);
+router.post('/register', authLimiter, localRegister);
 
 export default router;

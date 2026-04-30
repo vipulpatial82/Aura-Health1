@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa'
-import { createUserWithEmailAndPassword, updateProfile, signInWithPopup } from 'firebase/auth'
-import { auth, googleProvider } from '../api/firebase'
+import { signInWithPopup } from 'firebase/auth'
+import { auth, googleProvider, firebaseProjectInfo } from '../api/firebase'
 import api from '../api/axiosInstance'
 
 const SignupForm = ({ onSignup }) => {
@@ -20,17 +20,11 @@ const SignupForm = ({ onSignup }) => {
     setIsLoading(true)
     setError('')
     try {
-      // Create user in Firebase
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
-      
-      // Update Firebase profile with name
-      await updateProfile(userCredential.user, { displayName: formData.name })
-      
-      // Get Firebase ID token
-      const idToken = await userCredential.user.getIdToken()
-
-      // Send to backend
-      const { data } = await api.post('/auth/firebase-login', { idToken, name: formData.name })
+      const { data } = await api.post('/auth/register', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      })
       
       if (data.success) {
         localStorage.setItem('accessToken', data.data.accessToken)
@@ -74,6 +68,9 @@ const SignupForm = ({ onSignup }) => {
       console.error('Google sign-up error:', err)
       if (err.code === 'auth/popup-closed-by-user') {
         setError('Sign-up popup was closed. Please try again.')
+      } else if (err.code === 'auth/operation-not-allowed') {
+        const projectHint = firebaseProjectInfo.projectId || firebaseProjectInfo.authDomain || 'unknown-project'
+        setError(`Google login is disabled for Firebase project "${projectHint}". Check deployed Firebase env values.`)
       } else if (err.code === 'auth/account-exists-with-different-credential') {
         setError('An account already exists with this email using a different login method.')
       } else {

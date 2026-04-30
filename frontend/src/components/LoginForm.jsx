@@ -3,7 +3,7 @@ import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FaEnvelope, FaLock, FaUserPlus } from 'react-icons/fa'
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
-import { auth, googleProvider } from '../api/firebase'
+import { auth, googleProvider, firebaseProjectInfo } from '../api/firebase'
 import api from '../api/axiosInstance'
 
 const LoginForm = ({ onLogin }) => {
@@ -87,6 +87,9 @@ const LoginForm = ({ onLogin }) => {
       console.error('Google sign-in error:', err)
       if (err.code === 'auth/popup-closed-by-user') {
         setError('Sign-in popup was closed. Please try again.')
+      } else if (err.code === 'auth/operation-not-allowed') {
+        const projectHint = firebaseProjectInfo.projectId || firebaseProjectInfo.authDomain || 'unknown-project'
+        setError(`Google login is disabled for Firebase project "${projectHint}". Check deployed Firebase env values.`)
       } else if (err.code === 'auth/account-exists-with-different-credential') {
         setError('An account already exists with this email using a different login method.')
       } else {

@@ -10,9 +10,24 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+const missingFirebaseEnv = Object.entries(firebaseConfig)
+  .filter(([, value]) => !value)
+  .map(([key]) => key);
+
+if (missingFirebaseEnv.length > 0) {
+  console.error(
+    '[Firebase] Missing frontend env variables:',
+    missingFirebaseEnv.join(', ')
+  );
+}
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
+export const firebaseProjectInfo = {
+  projectId: firebaseConfig.projectId,
+  authDomain: firebaseConfig.authDomain,
+};
 
 export default app;
