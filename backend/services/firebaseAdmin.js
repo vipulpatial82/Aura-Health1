@@ -1,47 +1,27 @@
 import admin from 'firebase-admin';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 if (!admin.apps.length) {
-  let credential;
+  try {
+    const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
+    if (!raw) throw new Error('FIREBASE_SERVICE_ACCOUNT env variable is not set');
 
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    try {
-      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-      credential = admin.credential.cert(serviceAccount);
-    } catch (e) {
-      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT from environment:', e);
-    }
-  } else {
-    try {
-      const filePath = path.join(__dirname, '../config/firebase-service-account.json');
-      if (fs.existsSync(filePath)) {
-        const fileData = fs.readFileSync(filePath, 'utf8');
-        credential = admin.credential.cert(JSON.parse(fileData));
-      }
-    } catch (e) {
-      console.error('Failed to load local firebase-service-account.json:', e);
-    }
-  }
-
-  if (credential) {
-    admin.initializeApp({ credential });
-  } else {
-    console.warn('Initializing Firebase Admin without explicit credentials');
-    admin.initializeApp();
+    const serviceAccount = JSON.parse(raw);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      projectId: serviceAccount.project_id,
+    });
+    console.log('[Firebase Admin] Initialized with service account for project:', serviceAccount.project_id);
+  } catch (e) {
+    console.error('[Firebase Admin] Failed to initialize:', e.message);
   }
 }
 
 export const verifyFirebaseToken = async (idToken) => {
+  if (!admin.apps.length) throw new Error('Firebase Admin not initialized');
   try {
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    return decodedToken;
+    return await admin.auth().verifyIdToken(idToken);
   } catch (error) {
-    console.error('Firebase token verification failed:', error);
+    console.error('Firebase token verification failed:', error.message);
     throw error;
   }
 };
