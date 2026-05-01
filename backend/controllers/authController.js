@@ -1,5 +1,5 @@
 import * as authService from '../services/authService.js';
-import { setAuthCookies, clearAuthCookies } from '../utils/tokenUtils.js';
+import { setAuthCookies, clearAuthCookies, generateAccessToken, generateRefreshToken } from '../utils/tokenUtils.js';
 import { asyncHandler, AppError } from '../middleware/errorMiddleware.js';
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
@@ -94,8 +94,8 @@ export const firebaseLogin = asyncHandler(async (req, res) => {
     await user.save();
   }
 
-  const accessToken = authService.generateAccessToken(user._id);
-  const refreshToken = authService.generateRefreshToken();
+  const accessToken = generateAccessToken(user._id);
+  const refreshToken = generateRefreshToken();
 
   user.refreshToken = refreshToken;
   user.refreshTokenExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -103,7 +103,6 @@ export const firebaseLogin = asyncHandler(async (req, res) => {
 
   setAuthCookies(res, accessToken, refreshToken);
 
-  // FIX: include refreshToken in response body so frontend can read it
   res.json({
     success: true,
     data: {
@@ -135,8 +134,8 @@ export const localLogin = asyncHandler(async (req, res) => {
       });
     }
 
-    const accessToken = authService.generateAccessToken(user._id);
-    const refreshToken = authService.generateRefreshToken();
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken();
 
     user.refreshToken = refreshToken;
     user.refreshTokenExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);

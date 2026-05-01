@@ -2,6 +2,9 @@
 .env
 .env.local
 .env.production
+
+# Firebase service account - contains private keys
+backend/config/firebase-service-account.json
 backend/.env
 frontend/.env
 
