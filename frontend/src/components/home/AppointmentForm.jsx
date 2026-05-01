@@ -11,8 +11,11 @@ export default function AppointmentForm() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  const today = new Date().toISOString().split('T')[0];
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (form.date < today) { alert('Please select a future date.'); return; }
     sessionStorage.setItem('pendingAppointment', JSON.stringify(form));
     navigate('/appointments');
   };
@@ -75,7 +78,7 @@ export default function AppointmentForm() {
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label>
                 <input name="date" type="date" value={form.date} onChange={handleChange}
-                  required className="input-field py-2.5 text-sm" />
+                  required min={today} className="input-field py-2.5 text-sm" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Time</label>

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { FaUserMd, FaSearch, FaEye, FaTimes, FaPlus, FaChartBar, FaBell, FaCrown } from 'react-icons/fa'
+import { FaUserMd, FaSearch, FaEye, FaTimes, FaPlus, FaChartBar, FaBell, FaCrown, FaTrash } from 'react-icons/fa'
 import api from '../api/axiosInstance'
 
 const SPECIALIZATIONS = ['Cardiology', 'Neurology', 'General Physician', 'Pediatrics', 'Dermatology', 'Orthopedics']
@@ -320,7 +320,7 @@ export default function AdminDashboard() {
                           ${doc.isAvailable ? 'border-amber-200 text-amber-600 hover:bg-amber-50' : 'border-green-200 text-green-600 hover:bg-green-50'}`}>
                         {doc.isAvailable ? 'Deactivate' : 'Activate'}
                       </button>
-                      <button onClick={() => deleteDoctor(doc._id)} className="text-xs px-3 py-1.5 rounded-xl border border-red-100 text-red-500 hover:bg-red-50 transition-colors">✕</button>
+                      <button onClick={() => deleteDoctor(doc._id)} className="text-xs px-3 py-1.5 rounded-xl border border-red-100 text-red-500 hover:bg-red-50 transition-colors"><FaTrash /></button>
                     </div>
                   </div>
                 ))}

@@ -2,11 +2,12 @@
 .env
 .env.local
 .env.production
+backend/.env
+frontend/.env
 
 # Firebase service account - contains private keys
 backend/config/firebase-service-account.json
-backend/.env
-frontend/.env
+*firebase-adminsdk*.json
 
 # Dependencies
 node_modules/
@@ -21,12 +22,9 @@ backend/logs/
 # Build output
 dist/
 .dist/
+backend/.dist/
 frontend/.dist/
 frontend/dist/
-
-# Secrets
-backend/config/firebase-service-account.json
-*firebase-adminsdk*.json
 
 # OS files
 .DS_Store

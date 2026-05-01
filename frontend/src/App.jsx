@@ -15,6 +15,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import Profile from './pages/Profile'
 import LoginForm from './components/LoginForm'
 import SignupForm from './components/SignupForm'
+import NotFound from './pages/NotFound'
 
 const PageLayout = ({ isLoggedIn, onLogout, user, children }) => (
   <div className="flex flex-col min-h-screen">
@@ -78,8 +79,7 @@ const App = () => {
       <Route path="/profile"              element={protectedLayout(<Profile user={user} onUpdate={handleLogin} />)} />
       <Route path="/login"  element={layout(<LoginForm onLogin={handleLogin} />)} />
       <Route path="/signup" element={layout(<SignupForm onSignup={handleLogin} />)} />
-
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={layout(<NotFound />)} />
     </Routes>
   )
 }
