@@ -30,8 +30,3 @@ frontend/dist/
 .DS_Store
 Thumbs.db
 
-# IDE files
-.vscode/
-.idea/
-*.suo
-*.user
