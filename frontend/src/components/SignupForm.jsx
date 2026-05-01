@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa'
-import { signInWithPopup } from 'firebase/auth'
+import { signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth'
 import { auth, googleProvider, firebaseProjectInfo } from '../api/firebase'
 import api from '../api/axiosInstance'
 
@@ -11,6 +11,22 @@ const SignupForm = ({ onSignup }) => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+
+  useEffect(() => {
+    getRedirectResult(auth).then(async (result) => {
+      if (!result) return
+      const idToken = await result.user.getIdToken()
+      const name = result.user.displayName || result.user.email?.split('@')[0]
+      const { data } = await api.post('/auth/firebase-login', { idToken, name })
+      if (data.success) {
+        localStorage.setItem('accessToken', data.data.accessToken)
+        localStorage.setItem('user', JSON.stringify(data.data.user))
+        onSignup(data.data.user)
+        navigate('/dashboard', { replace: true })
+      }
+    }).catch(() => {})
+  }, [])
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value })
 
@@ -54,6 +70,7 @@ const SignupForm = ({ onSignup }) => {
     setError('')
     try {
       await auth.signOut()
+      if (isMobile) { await signInWithRedirect(auth, googleProvider); return }
       const result = await signInWithPopup(auth, googleProvider)
       const idToken = await result.user.getIdToken()
       const name = result.user.displayName || formData.name || result.user.email?.split('@')[0]

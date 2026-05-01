@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FaEnvelope, FaLock, FaUserPlus } from 'react-icons/fa'
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth'
 import { auth, googleProvider, firebaseProjectInfo } from '../api/firebase'
 import api from '../api/axiosInstance'
 
@@ -16,10 +16,24 @@ const LoginForm = ({ onLogin }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+
   useEffect(() => {
     if (searchParams.get('error') === 'oauth_failed') {
       setError('Google sign-in failed. Please try again.')
     }
+    // Handle redirect result on mobile after returning from Google
+    getRedirectResult(auth).then(async (result) => {
+      if (!result) return
+      const idToken = await result.user.getIdToken()
+      const { data } = await api.post('/auth/firebase-login', { idToken })
+      if (data.success) {
+        localStorage.setItem('accessToken', data.data.accessToken)
+        localStorage.setItem('user', JSON.stringify(data.data.user))
+        onLogin(data.data.user)
+        navigate(from, { replace: true })
+      }
+    }).catch(() => {})
   }, [])
 
   const handleChange = (e) => {
@@ -71,6 +85,7 @@ const LoginForm = ({ onLogin }) => {
       await auth.signOut()
       
       // Sign in with Google popup
+      if (isMobile) { await signInWithRedirect(auth, googleProvider); return }
       const result = await signInWithPopup(auth, googleProvider)
       
       // Get the ID token
