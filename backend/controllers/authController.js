@@ -83,6 +83,7 @@ export const firebaseLogin = asyncHandler(async (req, res) => {
       isVerified: true,
       authProvider: 'firebase',
       firebaseUid: uid,
+      lastLogin: new Date(),
     });
   } else {
     if (!user.name || user.name === email.split('@')[0]) {
@@ -99,6 +100,7 @@ export const firebaseLogin = asyncHandler(async (req, res) => {
 
   user.refreshToken = refreshToken;
   user.refreshTokenExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  user.lastLogin = new Date();
   await user.save();
 
   setAuthCookies(res, accessToken, refreshToken);
