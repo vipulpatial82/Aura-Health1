@@ -5,7 +5,11 @@ import { generateDirectionsUrl, getUserLocationByIP, getLocationCoordinates } fr
 const OVERPASS_URLS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.openstreetmap.ru/api/interpreter',
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
 ];
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 const buildQuery = (lat, lon) =>
   `[out:json][timeout:20];(node["amenity"="hospital"](around:10000,${lat},${lon});way["amenity"="hospital"](around:10000,${lat},${lon}););out body center tags;`;
@@ -38,8 +42,12 @@ const findNearbyHospitals = async (lat, lon) => {
 
   for (const url of OVERPASS_URLS) {
     try {
-      const res = await axios.post(url, `data=${encodeURIComponent(query)}`, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      const res = await axios.get(url, {
+        params: { data: query },
+        headers: {
+          'User-Agent': 'AuraHealth/1.0',
+          'Accept': 'application/json',
+        },
         timeout: 25000,
       });
 
@@ -57,6 +65,7 @@ const findNearbyHospitals = async (lat, lon) => {
       }
     } catch (err) {
       logger.error(`Overpass failed (${url}): ${err.message}`);
+      if (err.response?.status === 429) await sleep(2000);
     }
   }
 
