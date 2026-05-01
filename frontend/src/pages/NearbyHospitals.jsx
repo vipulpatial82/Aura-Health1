@@ -181,10 +181,16 @@ export default function NearbyHospitals() {
                             <span>{hospital.address}</span>
                           </div>
                         )}
-                        {hospital.phone && hospital.phone !== 'Contact info not available' && (
+                        {hospital.phone && (
                           <div className="flex items-center gap-2 text-xs text-slate-500">
                             <FaPhone className="text-slate-400 flex-shrink-0" />
                             <span>{hospital.phone}</span>
+                          </div>
+                        )}
+                        {hospital.speciality && (
+                          <div className="flex items-center gap-2 text-xs text-slate-500">
+                            <FaClock className="text-slate-400 flex-shrink-0" />
+                            <span className="capitalize">{hospital.speciality.replace(/_/g, ' ')}</span>
                           </div>
                         )}
                         <div className="flex items-center gap-2 text-xs text-slate-500">

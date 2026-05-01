@@ -5,22 +5,14 @@ import { generateDirectionsUrl, getUserLocationByIP, getLocationCoordinates } fr
 const OVERPASS_URLS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
-  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
 ];
 
-const buildQuery = (lat, lon) => `
-[out:json][timeout:25];
-(
-  node["amenity"="hospital"](around:10000,${lat},${lon});
-  way["amenity"="hospital"](around:10000,${lat},${lon});
-  relation["amenity"="hospital"](around:10000,${lat},${lon});
-);
-out body center tags;
-`;
+const buildQuery = (lat, lon) =>
+  `[out:json][timeout:20];(node["amenity"="hospital"](around:10000,${lat},${lon});way["amenity"="hospital"](around:10000,${lat},${lon}););out body center tags;`;
 
 const formatHospital = (place, index) => {
-  const lat = place.lat || place.center?.lat;
-  const lon = place.lon || place.center?.lon;
+  const plat = place.lat || place.center?.lat;
+  const plon = place.lon || place.center?.lon;
   const tags = place.tags || {};
   return {
     id: place.id || index + 1,
@@ -28,13 +20,15 @@ const formatHospital = (place, index) => {
     address: [
       tags['addr:housenumber'],
       tags['addr:street'],
-      tags['addr:city'],
-    ].filter(Boolean).join(', ') || tags['addr:full'] || 'Address not available',
-    phone: tags.phone || tags['contact:phone'] || null,
+      tags['addr:city'] || tags['addr:district'],
+    ].filter(Boolean).join(', ') || tags['addr:full'] || tags['addr:suburb'] || 'Address not available',
+    phone: tags.phone || tags['contact:phone'] || tags.fax || null,
     website: tags.website || tags['contact:website'] || null,
     emergency: tags.emergency === 'yes' ? '24/7 Emergency' : 'Regular hours',
-    directionsUrl: lat && lon
-      ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`
+    speciality: tags['healthcare:speciality'] || null,
+    beds: tags.beds || null,
+    directionsUrl: plat && plon
+      ? `https://www.google.com/maps/dir/?api=1&destination=${plat},${plon}`
       : generateDirectionsUrl(tags.name || 'Hospital'),
   };
 };
@@ -44,27 +38,28 @@ const findNearbyHospitals = async (lat, lon) => {
 
   for (const url of OVERPASS_URLS) {
     try {
-      const res = await axios.post(url, query, {
-        headers: { 'Content-Type': 'text/plain' },
-        timeout: 28000,
+      const res = await axios.post(url, `data=${encodeURIComponent(query)}`, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        timeout: 25000,
       });
 
       const elements = res.data?.elements;
-      if (!Array.isArray(elements)) continue;
+      if (!Array.isArray(elements) || elements.length === 0) continue;
 
       const hospitals = elements
         .filter(e => e.tags?.name)
         .slice(0, 12)
         .map(formatHospital);
 
-      if (hospitals.length > 0) return hospitals;
+      if (hospitals.length > 0) {
+        logger.info(`Found ${hospitals.length} hospitals via ${url}`);
+        return hospitals;
+      }
     } catch (err) {
-      logger.error(`Overpass API failed (${url}): ${err.message}`);
-      continue;
+      logger.error(`Overpass failed (${url}): ${err.message}`);
     }
   }
 
-  logger.error('All Overpass mirrors failed');
   return [];
 };
 
