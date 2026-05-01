@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaHospital, FaSearchLocation, FaMapSigns, FaLocationArrow, FaPhone, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaHospital, FaSearchLocation, FaMapSigns, FaLocationArrow, FaPhone, FaClock, FaMapMarkerAlt, FaWifi, FaMapPin, FaSearch } from 'react-icons/fa';
 import api from '../api/axiosInstance';
 
 export default function NearbyHospitals() {
@@ -99,8 +99,9 @@ export default function NearbyHospitals() {
               <FaLocationArrow /> Use Current Location
             </button>
             {locationSource && (
-              <p className="text-center text-xs text-slate-400 mt-2">
-                Source: {locationSource === 'device' ? '📍 Device GPS' : locationSource === 'ip' ? '🌐 Network IP' : '🔍 Manual search'}
+              <p className="text-center text-xs text-slate-400 mt-2 flex items-center justify-center gap-1.5">
+                {locationSource === 'device' ? <FaMapPin className="text-green-500" /> : locationSource === 'ip' ? <FaWifi className="text-blue-400" /> : <FaSearch className="text-slate-400" />}
+                {locationSource === 'device' ? 'Device GPS' : locationSource === 'ip' ? 'Network IP' : 'Manual search'}
               </p>
             )}
           </div>

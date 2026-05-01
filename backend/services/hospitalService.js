@@ -4,13 +4,13 @@ import { generateDirectionsUrl, getUserLocationByIP, getLocationCoordinates } fr
 
 const findNearbyHospitals = async (lat, lon) => {
   const query = `
-  [out:json];
+  [out:json][timeout:25];
   (
-    node["amenity"="hospital"](around:3000,${lat},${lon});
-    way["amenity"="hospital"](around:3000,${lat},${lon});
-    relation["amenity"="hospital"](around:3000,${lat},${lon});
+    node["amenity"="hospital"](around:10000,${lat},${lon});
+    way["amenity"="hospital"](around:10000,${lat},${lon});
+    relation["amenity"="hospital"](around:10000,${lat},${lon});
   );
-  out center tags;
+  out body center tags;
   `;
 
   try {
