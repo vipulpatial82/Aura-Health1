@@ -24,11 +24,11 @@ export default function NearbyHospitals() {
     if (!location.trim()) return;
     setLoading(true); setError('');
     try {
-      const { data } = await api.post('/hospitals/search', { location });
-      if (data.success) handleSuccess(data, location, 'manual');
+      const { data } = await api.post('/hospitals/search', { location }, { timeout: 35000 });
+      if (data.success) handleSuccess(data, data.location || location, 'manual');
       else setError(data.message || 'No hospitals found');
     } catch (err) {
-      setError(err.response?.data?.message || 'Search failed. Try again.');
+      setError(err.response?.data?.message || 'Search timed out. Please try again.');
     } finally { setLoading(false); }
   };
 

@@ -10,7 +10,7 @@ export const searchByLocation = asyncHandler(async (req, res) => {
   if (!location?.trim()) throw new AppError('Location is required', 400);
 
   const hospitals = await searchHospitalsByLocation(location);
-  res.json({ success: true, data: hospitals, count: hospitals.length });
+  res.json({ success: true, data: hospitals, count: hospitals.length, location });
 });
 
 export const autoLocation = asyncHandler(async (req, res) => {
