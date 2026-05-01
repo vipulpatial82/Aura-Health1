@@ -14,7 +14,6 @@ export const seedDefaultAccounts = async () => {
   const defaultPassword = process.env.SEED_PASSWORD || 'Doctor@123';
   const adminEmail      = process.env.ADMIN_EMAIL    || 'doctor@aurahealth.com';
 
-  // Admin account
   const adminUser = await User.findOne({ email: adminEmail });
   if (!adminUser) {
     const hashed = await bcrypt.hash(defaultPassword, 12);
@@ -22,19 +21,6 @@ export const seedDefaultAccounts = async () => {
   } else {
     const hashed = await bcrypt.hash(defaultPassword, 12);
     await User.updateOne({ email: adminEmail }, { $set: { role: 'admin', password: hashed } });
-  }
-
-  // Seed one default doctor so appointment assignment works
-  const doctorEmail = 'dr.sarah@aurahealth.com';
-  let doctorUser = await User.findOne({ email: doctorEmail });
-  if (!doctorUser) {
-    const hashed = await bcrypt.hash(defaultPassword, 12);
-    doctorUser = await User.create({ name: 'Dr. Sarah Jenkins', email: doctorEmail, password: hashed, role: 'doctor' });
-  }
-  const Doctor = (await import('../models/Doctor.js')).default;
-  const doctorExists = await Doctor.findOne({ userId: doctorUser._id });
-  if (!doctorExists) {
-    await Doctor.create({ userId: doctorUser._id, specialization: 'General Physician', experience: 10, workingHours: '9:00 AM - 5:00 PM', isAvailable: true });
   }
 };
 
