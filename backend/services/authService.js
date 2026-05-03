@@ -53,7 +53,7 @@ export const loginUser = async (email, password) => {
     '+password +loginAttempts +lockUntil +refreshToken'
   );
 
-  if (!user) throw new AppError('Invalid credentials', 401);
+  if (!user) throw new AppError('Account not found. Please create an account first by signing up.', 404);
 
   // Check account lock
   if (user.lockUntil && user.lockUntil > Date.now()) {

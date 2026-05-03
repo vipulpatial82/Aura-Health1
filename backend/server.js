@@ -81,7 +81,13 @@ app.use('/api/admin',        adminRoutes);
 app.use('/api/doctors',      doctorRoutes);
 app.use('/api/medications',  medicationRoutes);
 
-app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'AuraHealth backend running',
+    timestamp: new Date().toISOString()
+  });
+});
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5003;
