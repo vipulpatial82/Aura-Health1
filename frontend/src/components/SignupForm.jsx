@@ -111,10 +111,6 @@ const SignupForm = ({ onSignup }) => {
         </div>
 
         <div className="glass-panel p-6">
-          <div className="bg-blue-50 border border-blue-200 text-blue-700 p-2.5 rounded-lg text-xs font-medium text-center mb-4">
-            ℹ️ Create an account to access all AuraHealth features
-          </div>
-
           {error && (
             <div className="bg-red-50 border border-red-100 text-red-600 p-2.5 rounded-lg text-xs font-medium text-center mb-4">{error}</div>
           )}

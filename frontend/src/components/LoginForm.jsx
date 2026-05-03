@@ -120,10 +120,6 @@ const LoginForm = ({ onLogin }) => {
         </div>
 
         <div className="glass-panel p-6">
-          <div className="bg-blue-50 border border-blue-200 text-blue-700 p-2.5 rounded-lg text-xs font-medium text-center mb-4">
-            💡 Don't have an account? Create one using the button below
-          </div>
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">Email</label>
