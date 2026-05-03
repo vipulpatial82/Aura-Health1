@@ -19,8 +19,7 @@
 
 ## Overview
 
-**AuraHealth** is a comprehensive, production-grade healthcare platform that transforms raw medical data into actionable, personalized health insights. By integrating **Google Gemini AI** at its core, the platform delivers intelligent risk analysis, real-time hospital discovery, medication tracking, and seamless appointment scheduling — all within a secure, role-based environment built for patients, doctors, and administrators.
-
+AuraHealth is a full-stack healthcare platform I built to turn raw medical data into meaningful, personalized health insights. It uses Google Gemini AI to provide intelligent risk analysis, real-time hospital discovery, medication tracking, and appointment scheduling — all within a secure, role-based system designed for patients, doctors, and administrators.
 ---
 
 ## Features
